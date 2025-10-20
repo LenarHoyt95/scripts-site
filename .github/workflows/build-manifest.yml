@@ -55,4 +55,51 @@ jobs:
 
               name = meta.get("name", slug)
               language = meta.get("language", "Autre")
-              des
+              description = meta.get("description", "")
+              entry = meta.get("entry")
+
+              if not entry:
+                print(f"[WARN] Pas d'entrée principale dans {slug}")
+                continue
+
+              entry_path = f"{scripts_dir}/{slug}/{entry}"
+              if not os.path.isfile(entry_path):
+                print(f"[WARN] Fichier {entry_path} introuvable")
+                continue
+
+              # Date du dernier commit
+              try:
+                dt = subprocess.check_output(
+                  ["git", "log", "-1", "--format=%cI", "--", entry_path],
+                  text=True
+                ).strip()
+              except Exception:
+                dt = ""
+
+              items.append({
+                "slug": slug,
+                "name": name,
+                "language": language,
+                "description": description,
+                "entry": entry,
+                "view_url": base_blob + entry_path,
+                "download_url": base_raw + entry_path,
+                "last_commit": dt
+              })
+
+          os.makedirs("docs", exist_ok=True)
+          with open("docs/manifest.json", "w", encoding="utf-8") as f:
+            json.dump({"items": items}, f, ensure_ascii=False, indent=2)
+
+          print(f"✅ {len(items)} scripts indexés.")
+          PY
+
+      # 3️⃣ Préparer les fichiers pour GitHub Pages (docs/)
+      - name: Upload artifact (docs)
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      # 4️⃣ Déploiement automatique vers GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
