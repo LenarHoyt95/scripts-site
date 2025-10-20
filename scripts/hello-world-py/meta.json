@@ -1,0 +1,6 @@
+{
+  "name": "Hello World (Python)",
+  "language": "Python",
+  "description": "Script très simple qui affiche 'Hello, world!'.",
+  "entry": "hello.py"
+}
