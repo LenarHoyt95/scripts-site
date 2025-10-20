@@ -58,6 +58,8 @@
 
 <body>
   <h1>Mes scripts</h1>
+
+  <!-- Barre de recherche et filtres -->
   <header>
     <input id="q" placeholder="Recherche par nom ou description…" />
     <select id="lang">
@@ -70,21 +72,16 @@
       <option value="date-desc">Plus récents d'abord</option>
       <option value="date-asc">Plus anciens d'abord</option>
     </select>
+    <!-- Bouton ajouté à droite des filtres -->
+    <button id="open-upload" class="btn" style="margin-left:auto;">＋ Ajouter un script</button>
   </header>
 
+  <!-- Liste des scripts -->
   <div id="list" class="grid"></div>
 
   <footer>
-    Géré par GitHub Pages • Le catalogue se met à jour à chaque push.<br>
-    <a class="btn" href="https://github.com/<ton-utilisateur>/scripts-site/archive/refs/heads/main.zip">
-      Télécharger tout (ZIP)
-    </a>
+    Géré par GitHub Pages • Le catalogue se met à jour à chaque push.
   </footer>
-
-  <!-- Bouton flottant pour ouvrir la modale d’upload -->
-  <button id="open-upload" class="btn" style="position:fixed;right:16px;bottom:16px;z-index:50;">
-    ＋ Ajouter un script
-  </button>
 
   <!-- Modale d’upload -->
   <div id="upload-modal" style="display:none; position:fixed; inset:0; background:#00000055; z-index:40;">
