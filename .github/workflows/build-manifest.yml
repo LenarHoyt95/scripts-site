@@ -1,28 +1,30 @@
 name: Build manifest
 
-# 📅 Déclenchement : à chaque push sur "main" ou manuellement
 on:
   push:
     branches: [ "main" ]
   workflow_dispatch:
 
+# Autorisations requises par GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
+# Évite les déploiements concurrents
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      # 1️⃣ Télécharger le contenu du dépôt
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # 2️⃣ Construire le manifest.json
       - name: Build manifest.json
         env:
           REPO: ${{ github.repository }}
@@ -33,24 +35,20 @@ jobs:
 
           REPO = os.environ["REPO"]
           BRANCH = os.environ.get("BRANCH", "main")
-
           base_raw = f"https://raw.githubusercontent.com/{REPO}/{BRANCH}/"
           base_blob = f"https://github.com/{REPO}/blob/{BRANCH}/"
 
           scripts_dir = "scripts"
           items = []
-
           if os.path.isdir(scripts_dir):
             for slug in sorted(os.listdir(scripts_dir)):
               d = os.path.join(scripts_dir, slug)
-              if not os.path.isdir(d):
+              if not os.path.isdir(d): 
                 continue
-
               meta_path = os.path.join(d, "meta.json")
               if not os.path.isfile(meta_path):
                 print(f"[WARN] Aucun meta.json dans {slug}")
                 continue
-
               try:
                 with open(meta_path, "r", encoding="utf-8") as f:
                   meta = json.load(f)
@@ -62,7 +60,6 @@ jobs:
               language = meta.get("language", "Autre")
               description = meta.get("description", "")
               entry = meta.get("entry")
-
               if not entry:
                 print(f"[WARN] Pas d'entrée principale dans {slug}")
                 continue
@@ -72,10 +69,9 @@ jobs:
                 print(f"[WARN] Fichier {entry_path} introuvable")
                 continue
 
-              # Date du dernier commit
               try:
                 dt = subprocess.check_output(
-                  ["git", "log", "-1", "--format=%cI", "--", entry_path],
+                  ["git","log","-1","--format=%cI","--",entry_path],
                   text=True
                 ).strip()
               except Exception:
@@ -93,18 +89,24 @@ jobs:
               })
 
           os.makedirs("docs", exist_ok=True)
-          with open("docs/manifest.json", "w", encoding="utf-8") as f:
+          with open("docs/manifest.json","w",encoding="utf-8") as f:
             json.dump({"items": items}, f, ensure_ascii=False, indent=2)
-
           print(f"✅ {len(items)} scripts indexés.")
           PY
 
-      # 3️⃣ Préparer les fichiers pour GitHub Pages (docs/)
       - name: Upload artifact (docs)
         uses: actions/upload-pages-artifact@v3
         with:
           path: docs
 
-      # 4️⃣ Déploiement automatique vers GitHub Pages
+  deploy:
+    # 👉 C'est **ici** que l'on déclare l'environnement Pages
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
       - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v4
