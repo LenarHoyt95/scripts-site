@@ -42,10 +42,33 @@ async function load() {
     }
   }
 
+  // --- Télécharger via JS pour déclencher la fenêtre d'enregistrement ---
+  async function downloadScript(item) {
+    try {
+      const res = await fetch(item.download_url, { cache: 'no-store' });
+      if (!res.ok) throw new Error('Échec du téléchargement');
+      const blob = await res.blob();
+
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      // propose le nom de fichier (celui défini par "entry")
+      a.download = item.entry || 'script';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      // libère l'URL temporaire
+      setTimeout(() => URL.revokeObjectURL(a.href), 0);
+    } catch (e) {
+      console.error(e);
+      alert("Téléchargement impossible. Réessaie plus tard.");
+    }
+  }
+
   function render() {
     $list.innerHTML = '';
     const filtered = sortItems(items.filter(matches));
     if (!filtered.length) { $list.innerHTML = '<div>Aucun script trouvé…</div>'; return; }
+
     for (const i of filtered) {
       const card = document.createElement('div');
       card.className = 'card';
@@ -54,14 +77,17 @@ async function load() {
         <div class="language">${i.language}</div>
         <div class="desc">${i.description || ''}</div>
         <div class="row">
-          <a class="btn" href="${i.view_url}" target="_blank">Voir</a>
-          <a class="btn" href="${i.download_url}" download>Télécharger</a>
+          <a class="btn" href="${i.view_url}" target="_blank" rel="noopener">Voir</a>
+          <button class="btn" data-dl>Télécharger</button>
         </div>
         <div class="muted">${i.last_commit ? 'Modifié : ' + new Date(i.last_commit).toLocaleString('fr-FR') : ''}</div>
       `;
+      // branche le bouton de téléchargement sur cet item
+      card.querySelector('[data-dl]').addEventListener('click', () => downloadScript(i));
       $list.appendChild(card);
     }
   }
+
   render();
 }
 load();
