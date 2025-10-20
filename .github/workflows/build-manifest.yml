@@ -1,0 +1,58 @@
+name: Build manifest
+
+# 📅 Déclenchement : à chaque push sur "main" ou manuellement
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Télécharger le contenu du dépôt
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 2️⃣ Construire le manifest.json
+      - name: Build manifest.json
+        env:
+          REPO: ${{ github.repository }}
+          BRANCH: main
+        run: |
+          python - << 'PY'
+          import os, json, subprocess
+
+          REPO = os.environ["REPO"]
+          BRANCH = os.environ.get("BRANCH", "main")
+
+          base_raw = f"https://raw.githubusercontent.com/{REPO}/{BRANCH}/"
+          base_blob = f"https://github.com/{REPO}/blob/{BRANCH}/"
+
+          scripts_dir = "scripts"
+          items = []
+
+          if os.path.isdir(scripts_dir):
+            for slug in sorted(os.listdir(scripts_dir)):
+              d = os.path.join(scripts_dir, slug)
+              if not os.path.isdir(d):
+                continue
+
+              meta_path = os.path.join(d, "meta.json")
+              if not os.path.isfile(meta_path):
+                print(f"[WARN] Aucun meta.json dans {slug}")
+                continue
+
+              try:
+                with open(meta_path, "r", encoding="utf-8") as f:
+                  meta = json.load(f)
+              except Exception as e:
+                print(f"[WARN] meta.json invalide dans {slug}: {e}")
+                continue
+
+              name = meta.get("name", slug)
+              language = meta.get("language", "Autre")
+              des
