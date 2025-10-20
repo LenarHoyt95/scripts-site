@@ -39,5 +39,43 @@
     Géré par GitHub Pages • Le catalogue se met à jour à chaque push.
   </footer>
   <script src="app.js"></script>
+  <button id="open-upload" class="btn" style="position:fixed;right:16px;bottom:16px;">＋ Ajouter un script</button>
+
+<div id="upload-modal" style="display:none; position:fixed; inset:0; background:#00000055;">
+  <div style="max-width:560px; margin:6vh auto; background:#fff; border-radius:12px; padding:16px;">
+    <h2>Ajouter un script</h2>
+    <p style="font-size:12px;opacity:.7">Ton token n'est utilisé que dans ton navigateur (pas stocké sur le site).</p>
+    <div style="display:grid; gap:8px;">
+      <label>Token GitHub (PAT)
+        <input id="gh-token" type="password" placeholder="ghp_xxx" style="width:100%;padding:8px;">
+      </label>
+      <label>Propriétaire (owner)
+        <input id="gh-owner" placeholder="ton-identifiant" style="width:100%;padding:8px;">
+      </label>
+      <label>Repo
+        <input id="gh-repo" value="scripts-site" style="width:100%;padding:8px;">
+      </label>
+      <label>Nom du dossier (slug)
+        <input id="script-slug" placeholder="ex: google-drive-js" style="width:100%;padding:8px;">
+      </label>
+      <label>Fichier script
+        <input id="script-file" type="file" style="width:100%;padding:8px;">
+      </label>
+      <label>Nom (affiché)
+        <input id="meta-name" placeholder="ex: Google Drive Tools (JavaScript)" style="width:100%;padding:8px;">
+      </label>
+      <label>Langage
+        <input id="meta-language" placeholder="ex: JavaScript, Python, PowerShell…" style="width:100%;padding:8px;">
+      </label>
+      <label>Description
+        <textarea id="meta-desc" rows="3" placeholder="Que fait ce script ?" style="width:100%;padding:8px;"></textarea>
+      </label>
+    </div>
+    <div style="display:flex; gap:8px; margin-top:12px; justify-content:flex-end;">
+      <button id="cancel-upload" class="btn">Annuler</button>
+      <button id="do-upload" class="btn">Créer</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
