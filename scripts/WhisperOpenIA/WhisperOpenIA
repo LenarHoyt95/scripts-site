@@ -1,0 +1,37 @@
+\\Sur ton PC :
+
+\\Installe Python 3.11 et Whisper :
+
+pip install openai-whisper
+
+\\(corriger Torch)
+
+python -m pip uninstall -y torch torchvision torchaudio
+python -m pip cache purge
+
+python -m pip install --upgrade --index-url https://download.pytorch.org/whl/cpu torch
+
+python -m pip install --upgrade openai-whisper
+
+\\Assure-toi d’avoir le Microsoft Visual C++ Redistributable 2015–2022 (x64)
+
+\\Installation manuelle du FFmpeg complet
+
+winget search ffmpeg
+
+winget install Gyan.FFmpeg
+
+ou
+
+winget install BtbN.FFmpeg
+
+whisper "C:\Chemin\.mp3" --model small --language French --output_format srt
+
+
+| Nom du modèle | Vitesse     | Qualité    | Taille approx. |
+| ------------- | ----------- | ---------- | -------------- |
+| `tiny`        | Très rapide | Faible     | 75 Mo          |
+| `base`        | Rapide      | Moyenne    | 142 Mo         |
+| `small`       | Moyenne     | Bonne      | 462 Mo         |
+| `medium`      | Lent        | Très bonne | 1,5 Go         |
+| `large`       | Lent        | Excellente | 3 Go           |
