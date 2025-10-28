@@ -1,0 +1,6 @@
+{
+  "name": "WhisperOpenIA",
+  "language": "Ms-DOS",
+  "description": "Génération Automatique de sous-titre via WhisperOpenIA.",
+  "entry": "WhisperOpenIA.bat"
+}
