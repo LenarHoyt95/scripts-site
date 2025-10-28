@@ -27,6 +27,7 @@ winget install BtbN.FFmpeg
 
 whisper "C:\Chemin\.mp3" --model small --language French --output_format srt
 
+Les différents modèles disponibles :
 
 | Nom du modèle | Vitesse     | Qualité    | Taille approx. |
 | ------------- | ----------- | ---------- | -------------- |
